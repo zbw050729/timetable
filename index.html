@@ -226,20 +226,20 @@
   .gridbox::-webkit-scrollbar{ height: 0; }
   .grid{
     display: grid;
-    grid-template-columns: 40px repeat(7, minmax(74px, 1fr));
-    grid-auto-rows: minmax(66px, auto);
-    min-width: 592px;
+    grid-template-columns: 46px repeat(7, minmax(84px, 1fr));
+    grid-auto-rows: minmax(84px, auto);
+    min-width: 690px;
   }
   .gh{
     position: sticky; top: 0; z-index: 3;
     background: var(--bg2);
-    text-align: center; padding: 8px 2px 9px;
+    text-align: center; padding: 9px 2px 10px;
     border-bottom: 1px solid var(--line2);
   }
-  .gh .wk{ display: block; font-size: 11px; color: var(--muted); font-weight: 500; }
-  .gh .dt{ display: block; font-size: 13px; font-weight: 600; color: var(--text2); margin-top: 2px; }
+  .gh .wk{ display: block; font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .gh .dt{ display: block; font-size: 15px; font-weight: 700; color: var(--text2); margin-top: 2px; }
   .gh.today .wk, .gh.today .dt{ color: var(--accent); }
-  .gh .mo{ display: block; font-size: 10px; color: var(--muted); font-weight: 500; line-height: 1.9; }
+  .gh .mo{ display: block; font-size: 11px; color: var(--muted); font-weight: 500; line-height: 2.1; }
   .gh.corner{ border-bottom: 1px solid var(--line2); }
 
   .tcell{
@@ -252,18 +252,18 @@
     transition: background .15s;
   }
   .tcell button:hover{ background: var(--card2); }
-  .tcell .no{ font-size: 11px; font-weight: 700; color: var(--text2); line-height: 1.2; }
-  .tcell .tm{ font-size: 8.5px; color: var(--muted); line-height: 1.35; margin-top: 2px; letter-spacing: -.2px; }
+  .tcell .no{ font-size: 13px; font-weight: 700; color: var(--text2); line-height: 1.2; }
+  .tcell .tm{ font-size: 10px; color: var(--muted); line-height: 1.4; margin-top: 2px; letter-spacing: -.2px; }
 
   .cell{
-    min-height: 66px;
+    min-height: 84px;
     padding: 2px;
     border-bottom: 1px solid var(--line2);
     border-left: 1px solid var(--line2);
   }
 
   .cbtn .rm .span{
-    display: block; font-size: 8px; opacity: .72; margin-top: 1px;
+    display: block; font-size: 9.5px; opacity: .8; margin-top: 2px;
     letter-spacing: .1px;
   }
   .cell.span{ padding-top: 2px; padding-bottom: 2px; }
@@ -278,10 +278,10 @@
   .cbtn{
     display: flex; flex-direction: column;
     width: 100%; height: 100%;
-    min-height: 62px;
+    min-height: 80px;
     margin: 0;
-    padding: 6px 6px 5px;
-    border-radius: 8px;
+    padding: 8px 7px 7px;
+    border-radius: 10px;
     text-align: left;
     overflow: hidden;
     transition: transform .12s, filter .12s;
@@ -289,14 +289,14 @@
   }
   .cbtn:active{ transform: scale(.97); }
   .cbtn .nm{
-    font-size: 10.5px; font-weight: 600; line-height: 1.25;
+    font-size: 13.5px; font-weight: 700; line-height: 1.3;
     word-break: break-all;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
     overflow: hidden;
   }
   .cbtn .rm{
-    font-size: 8.5px; line-height: 1.3; margin-top: 3px;
-    opacity: .8;
+    font-size: 11px; line-height: 1.35; margin-top: 4px;
+    opacity: .88;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -314,6 +314,30 @@
   }
   .cbtn.plus:hover{ background: var(--card2); color: var(--accent); }
   body.simple .cbtn .rm{ display: none; }
+
+  body[data-font="small"] .cbtn .nm{ font-size: 11.5px; }
+  body[data-font="small"] .cbtn .rm{ font-size: 9px; }
+  body[data-font="small"] .cbtn .rm .span{ font-size: 8px; }
+  body[data-font="small"] .gh .wk{ font-size: 11.5px; }
+  body[data-font="small"] .gh .dt{ font-size: 13px; }
+  body[data-font="small"] .tcell .no{ font-size: 11.5px; }
+  body[data-font="small"] .tcell .tm{ font-size: 9px; }
+  body[data-font="normal"] .cbtn .nm{ font-size: 13.5px; }
+  body[data-font="normal"] .cbtn .rm{ font-size: 11px; }
+  body[data-font="normal"] .cbtn .rm .span{ font-size: 9.5px; }
+  body[data-font="normal"] .gh .wk{ font-size: 12.5px; }
+  body[data-font="normal"] .gh .dt{ font-size: 15px; }
+  body[data-font="normal"] .tcell .no{ font-size: 13px; }
+  body[data-font="normal"] .tcell .tm{ font-size: 10px; }
+  body[data-font="large"] .cbtn .nm{ font-size: 15.5px; }
+  body[data-font="large"] .cbtn .rm{ font-size: 12.5px; }
+  body[data-font="large"] .cbtn .rm .span{ font-size: 11px; }
+  body[data-font="large"] .gh .wk{ font-size: 14px; }
+  body[data-font="large"] .gh .dt{ font-size: 17px; }
+  body[data-font="large"] .tcell .no{ font-size: 14.5px; }
+  body[data-font="large"] .tcell .tm{ font-size: 11px; }
+  body[data-font="large"] .cell{ min-height: 90px; }
+  body[data-font="large"] .cbtn{ min-height: 86px; }
 
   /* ============ 日程 ============ */
   .agenda-head{
@@ -1130,10 +1154,18 @@
     .hero-title h1{ font-size: 20px; }
     .weekbar{ padding: 8px 14px 6px; }
     .calbar{ padding: 0 10px 8px; }
-    .gridbox{ margin: 0 6px; border-radius: 16px; }
-    .grid{ grid-template-columns: 36px repeat(7, minmax(66px, 1fr)); min-width: 530px; }
-    .tcell .tm{ font-size: 8px; }
-    .cbtn .nm{ font-size: 10px; }
+    .gridbox{ margin: 0 4px; border-radius: 16px; }
+    .grid{ grid-template-columns: 42px repeat(7, minmax(80px, 1fr)); min-width: 620px; }
+    .grid{ grid-auto-rows: minmax(80px, auto); }
+    .tcell .no{ font-size: 12.5px; }
+    .tcell .tm{ font-size: 9.5px; }
+    .gh .wk{ font-size: 12px; }
+    .gh .dt{ font-size: 14px; }
+    .cell{ min-height: 80px; }
+    .cbtn{ min-height: 76px; padding: 7px 6px 6px; }
+    .cbtn .nm{ font-size: 13px; font-weight: 700; }
+    .cbtn .rm{ font-size: 10.5px; }
+    .cbtn .rm .span{ font-size: 9px; }
     .agenda-head{ font-size: 20px; }
     .fab{ right: 14px; }
     .sheet{ max-height: 90%; }
@@ -1143,7 +1175,7 @@
 
 </style>
 </head>
-<body>
+<body data-font="normal">
 <div class="app" id="app">
   <div class="skin-layer" id="skinLayer"></div>
   <div id="viewHost"></div>
@@ -1169,6 +1201,11 @@ window.onerror = function(msg, src, line){
 var WEEK1 = ['一','二','三','四','五','六','日'];
 var WEEKF = ['周一','周二','周三','周四','周五','周六','周日'];
 var COLORS = ['#ff6b6b','#5ac8fa','#34c759','#ffcc00','#af52de','#ff9500','#ff2d55','#00c7be'];
+var FONTS = {
+  small:  { name:'小',   nm:'11.5px', rm:'9px',    wk:'11.5px', dt:'13px', no:'11.5px', tm:'9px' },
+  normal: { name:'标准', nm:'13.5px', rm:'11px',   wk:'12.5px', dt:'15px', no:'13px',   tm:'10px' },
+  large:  { name:'大',   nm:'15.5px', rm:'12.5px', wk:'14px',   dt:'17px', no:'14.5px', tm:'11px' }
+};
 var KEY = 'timetable-v4';
 
 function defSlots(){
@@ -1244,6 +1281,7 @@ function load(){
     d.remind = !!o.remind;
     d.simple = !!o.simple;
     d.skin = o.skin || 'none';
+    d.font = FONTS[o.font] ? o.font : 'normal';
     d.skins = Array.isArray(o.skins) ? o.skins : [];
     if(Array.isArray(o.agenda)) d.agenda = o.agenda;
     d.data = o.data;
@@ -1275,6 +1313,11 @@ function save(){
 function term(){ return S.data[S.termId] || (S.data[S.termId] = { slots: defSlots(), courses: {} }); }
 function slots(){ return term().slots; }
 function courses(){ return term().courses; }
+function extendSlots(n){
+  var sl = slots();
+  while(sl.length < n) sl.push({ s:'--:--', e:'--:--' });
+  return sl.length;
+}
 function esc(v){
   var s = String(v == null ? '' : v);
   s = s.split('&').join('&amp;');
@@ -1334,6 +1377,7 @@ function mondayOfWeek(w){
 /* ---------- 主渲染 ---------- */
 function render(){
   document.body.classList.toggle('simple', !!S.simple);
+  applyFont();
   applySkin();
   var host = document.getElementById('viewHost');
   host.className = 'scroll';
@@ -1475,73 +1519,151 @@ function cnWeek(txt){
   var map = { '一':1, '二':2, '三':3, '四':4, '五':5, '六':6, '日':7, '天':7, '七':7 };
   return map[txt] || 0;
 }
+function splitLines(txt){
+  return String(txt || '').split(/[\n\r]+/);
+}
+function tagOf(ln){
+  var m = /^\s*([\u4e00-\u9fa5]{1,6})\s*[:：]\s*(.*)$/.exec(ln);
+  if(!m) return null;
+  return { k: m[1], v: m[2].trim() };
+}
+function isTagKey(k, list){
+  for(var i = 0; i < list.length; i++){ if(k.indexOf(list[i]) >= 0) return true; }
+  return false;
+}
 function parseOneCourse(raw){
   var t = String(raw || '');
   if(!t.replace(/\s/g, '')) return null;
   var r = { day:-1, s1:-1, s2:-1, n:'', r:'', t:'', w:'', cr:'', note:'' };
   var work = t.replace(/／/g, '/').replace(/－/g, '-').replace(/[—–~～至到]/g, '-');
+  var total = Math.max(slots().length, 20);
 
-  var md = /(?:周|星期|礼拜)\s*([一二三四五六日天七])/.exec(work);
-  if(md) r.day = cnWeek(md[1]) - 1;
+  var DAYK = ['星期', '周'];
+  var WK = ['周数', '周次', '教学周', '上课周'];
+  var TM = ['时间', '节次', '上课时间', '课时安排'];
+  var TE = ['老师', '教师', '授课教师', '任课教师', '主讲'];
+  var RM = ['地点', '教室', '上课地点', '场地', '教室地点'];
+  var CR = ['学分'];
+  var NT = ['备注', '说明'];
 
-  var mw = /(\d{1,2})\s*-\s*(\d{1,2})\s*周/.exec(work);
-  if(mw) r.w = mw[1] + '-' + mw[2];
-  else {
-    var mw1 = /(\d{1,2})\s*周/.exec(work);
-    if(mw1) r.w = mw1[1];
-  }
+  var lines = splitLines(t);
+  var nameLines = [];
+  var plainLines = [];
 
-  var slotSrc = work;
-  if(mw) slotSrc = slotSrc.replace(mw[0], ' ');
-  var ms = /(\d{1,2})\s*-\s*(\d{1,2})\s*节/.exec(slotSrc) || /第\s*(\d{1,2})\s*-\s*(\d{1,2})\s*节/.exec(slotSrc);
-  var total = slots().length;
-  if(ms){
-    var a = parseInt(ms[1], 10), b = parseInt(ms[2], 10);
-    if(a >= 1 && b >= a && b <= total){ r.s1 = a - 1; r.s2 = b - 1; }
-  }
-  if(r.s1 < 0){
-    var m1 = /第\s*(\d{1,2})\s*节/.exec(slotSrc);
-    if(m1){
-      var a1 = parseInt(m1[1], 10);
-      if(a1 >= 1 && a1 <= total){ r.s1 = a1 - 1; r.s2 = a1 - 1; }
+  for(var i = 0; i < lines.length; i++){
+    var ln = lines[i].replace(/\s+/g, ' ').trim();
+    if(!ln) continue;
+    var tg = tagOf(ln);
+    if(tg && isTagKey(tg.k, DAYK)){
+      var md0 = /(?:周|星期|礼拜)\s*([一二三四五六日天七])/.exec(tg.v);
+      if(md0) r.day = cnWeek(md0[1]) - 1;
+      var ms0 = slotRange(tg.v);
+      if(ms0){
+        var a0 = parseInt(ms0[1], 10), b0 = parseInt(ms0[2] || ms0[1], 10);
+        if(a0 >= 1 && b0 >= a0 && b0 <= total){ r.s1 = a0 - 1; r.s2 = b0 - 1; }
+      }
+      continue;
     }
+    if(tg && isTagKey(tg.k, WK)){ r.w = extractWeek(tg.v); continue; }
+    if(tg && isTagKey(tg.k, TM)){
+      var msi = slotRange(tg.v);
+      if(msi){
+        var ai = parseInt(msi[1], 10), bi = parseInt(msi[2] || msi[1], 10);
+        if(ai >= 1 && bi >= ai && bi <= total){ r.s1 = ai - 1; r.s2 = bi - 1; }
+      }
+      var mdi = /(?:周|星期|礼拜)\s*([一二三四五六日天七])/.exec(tg.v);
+      if(mdi && r.day < 0) r.day = cnWeek(mdi[1]) - 1;
+      continue;
+    }
+    if(tg && isTagKey(tg.k, TE)){ r.t = cleanName(tg.v); continue; }
+    if(tg && isTagKey(tg.k, RM)){ r.r = tg.v; continue; }
+    if(tg && isTagKey(tg.k, CR)){ r.cr = ((/([\d.]+)/.exec(tg.v)) || [])[1] || ''; continue; }
+    if(tg && isTagKey(tg.k, NT)){ r.note = tg.v; continue; }
+    if(tg){ plainLines.push(tg.v); continue; }
+    nameLines.push(ln);
+    plainLines.push(ln);
   }
+
+  if(r.day < 0){
+    var md = /(?:周|星期|礼拜)\s*([一二三四五六日天七])/.exec(work);
+    if(md) r.day = cnWeek(md[1]) - 1;
+  }
+  if(!r.w) r.w = extractWeek(work);
   if(r.s1 < 0){
-    var mt = /(\d{1,2})\s*节/.exec(slotSrc);
-    if(mt){
-      var a2 = parseInt(mt[1], 10);
-      if(a2 >= 1 && a2 <= total){ r.s1 = a2 - 1; r.s2 = a2 - 1; }
+    var ms = slotRange(work);
+    if(ms){
+      var a = parseInt(ms[1], 10), b = parseInt(ms[2] || ms[1], 10);
+      if(a >= 1 && b >= a && b <= total){ r.s1 = a - 1; r.s2 = b - 1; }
     }
   }
 
   if(/单周/.test(work)) r.oddOnly = true;
   if(/双周/.test(work)) r.evenOnly = true;
 
-  var lines = t.split(/[\n\r]+/);
-  var rest = [];
-  for(var i = 0; i < lines.length; i++){
-    var ln = lines[i].replace(/\s+/g, ' ').trim();
-    if(!ln) continue;
-    if(!r.r && /(教|楼|室|馆|校区|实验|中心|场)/.test(ln) && !/(?:周|星期|礼拜)/.test(ln) && ln.length <= 30){
-      r.r = ln; continue;
+  if(!r.r){
+    for(var q = 0; q < plainLines.length; q++){
+      var pq = plainLines[q];
+      if(/(教|楼|室|馆|校区|实验|中心|场)/.test(pq) && !/(?:周|星期|礼拜)/.test(pq) && !/(\d{1,2})\s*-\s*(\d{1,2})\s*节/.test(pq) && pq.length <= 30){
+        r.r = pq;
+        var idx = nameLines.indexOf(pq);
+        if(idx >= 0) nameLines.splice(idx, 1);
+        break;
+      }
     }
-    if(!r.t && /(老师|教授|讲师|助教)$/.test(ln) && ln.length <= 12){
-      r.t = ln; continue;
-    }
-    if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(ln) && /节/.test(ln)) continue;
-    if(/^\d{1,2}\s*-\s*\d{1,2}\s*周$/.test(ln)) continue;
-    if(/^(学分|课时)[:：]?\s*[\d.]+$/.test(ln)){ r.cr = (/([\d.]+)/.exec(ln) || [])[1] || ''; continue; }
-    rest.push(ln);
   }
+  if(!r.t){
+    for(var q2 = 0; q2 < plainLines.length; q2++){
+      var pq2 = plainLines[q2];
+      if(/(老师|教授|讲师|助教)$/.test(pq2.replace(/[:：]$/, '')) && pq2.length <= 20){
+        r.t = cleanName(pq2);
+        break;
+      }
+    }
+  }
+
   if(!r.n){
-    var best = '';
-    for(var j = 0; j < rest.length; j++){
-      if(rest[j].length > best.length) best = rest[j];
+    var best = '', bestI = -1;
+    for(var j = 0; j < nameLines.length; j++){
+      var cur = stripNoise(nameLines[j]);
+      if(cur.length > best.length){ best = cur; bestI = j; }
     }
     r.n = best;
+  } else {
+    r.n = stripNoise(r.n);
   }
   if(!r.n) return null;
   return r;
+}
+function stripNoise(s){
+  var x = String(s || '').trim();
+  x = x.replace(/^(名称|课程名称|课程名|课程|科目)\s*[:：]\s*/, '');
+  return x.trim();
+}
+function cleanName(s){
+  var x = String(s || '').replace(/\s+/g, ' ').trim();
+  x = x.replace(/[:：]\s*$/, '');
+  return x;
+}
+function joinDigits(str){
+  return String(str || '').replace(/(\d)\s+(\d)/g, '$1$2');
+}
+function slotRange(src){
+  var s = joinDigits(src);
+  var m = /(?:第|第\s*)?(\d{1,2})\s*[-~]\s*(\d{1,2})\s*节/.exec(s);
+  if(m) return [null, m[1], m[2]];
+  var m1 = /第\s*(\d{1,2})\s*节/.exec(s);
+  if(m1) return [null, m1[1], m1[1]];
+  var m2 = /(\d{1,2})\s*节/.exec(s);
+  if(m2) return [null, m2[1], m2[1]];
+  return null;
+}
+function extractWeek(v){
+  var s = String(v || '');
+  var m = /(\d{1,2})\s*-\s*(\d{1,2})\s*周/.exec(s);
+  if(m) return m[1] + '-' + m[2];
+  var m1 = /(\d{1,2})\s*周/.exec(s);
+  if(m1) return m1[1];
+  return '';
 }
 function parseCourseText(text){
   var t = String(text || '');
@@ -1560,7 +1682,7 @@ function parseCourseText(text){
       var buf = [], cur = [];
       for(var k = 0; k < lines.length; k++){
         cur.push(lines[k]);
-        if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(lines[k]) && /节/.test(lines[k])){
+        if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(lines[k]) && slotRange(lines[k])){
           buf.push(cur.join('\n')); cur = [];
         }
       }
@@ -2035,6 +2157,7 @@ function openSettings(){
   h += '<div class="set-group">' +
     setItem('◐', '夜间模式', '', 'theme', '<span class="sw' + (document.documentElement.getAttribute('data-theme') === 'dark' ? ' on' : '') + '"></span>') +
     setItem('◻', '简洁模式', '', 'simple', '<span class="sw' + (S.simple ? ' on' : '') + '"></span>') +
+    setItem('A', '课表字号', FONTS[S.font || 'normal'].name, 'font') +
     setItem('🔔', '上课提醒', '', 'remind', '<span class="sw' + (S.remind ? ' on' : '') + '"></span>') +
   '</div>';
   h += '<div class="set-group">' +
@@ -2067,6 +2190,7 @@ function openSettings(){
         openSettings();
       }
       else if(k === 'simple'){ S.simple = !S.simple; save(); render(); openSettings(); }
+      else if(k === 'font') openFontPicker();
       else if(k === 'remind'){ S.remind = !S.remind; save(); openSettings(); toast(S.remind ? '已开启上课提醒' : '已关闭上课提醒'); }
       else if(k === 'io') openIO();
       else if(k === 'skin') openSkins();
@@ -2120,6 +2244,33 @@ function skinKind(s){
   if(!s || s.id === 'none') return 'none';
   if(s.kind) return s.kind;
   return String(s.bg || '').indexOf('data:') === 0 ? 'photo' : s.id;
+}
+function applyFont(){
+  document.body.setAttribute('data-font', FONTS[S.font || 'normal'] ? (S.font || 'normal') : 'normal');
+}
+function openFontPicker(){
+  var cur = S.font || 'normal';
+  var h = '<div class="sheet-body"><div class="dlg-t">课表字号</div>' +
+    '<div class="pv-tip" style="margin-bottom:12px">选好后再也不用来回调，挑最能看清的一档。</div>';
+  var keys = ['small', 'normal', 'large'];
+  for(var i = 0; i < keys.length; i++){
+    var k = keys[i], f = FONTS[k];
+    h += '<button class="set-item" data-font="' + k + '" style="border-top:' + (i ? '1px solid var(--line2)' : '0') + '">' +
+      '<span class="si">' + (k === cur ? '●' : '○') + '</span>' +
+      '<span class="st">' + f.name + '</span>' +
+      '<span class="sv" style="font-size:' + f.nm + ';font-weight:700">第3-5节 工程制图</span></button>';
+  }
+  h += '</div><div class="sheet-foot"><button class="foot-btn" data-e="cancel">关闭</button></div>';
+  openSheet(h, function(root){
+    root.querySelector('[data-e="cancel"]').onclick = closeModal;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-font]'), function(b){
+      b.onclick = function(){
+        S.font = b.getAttribute('data-font');
+        applyFont(); save(); render(); closeModal();
+        toast('字号已改为' + FONTS[S.font].name);
+      };
+    });
+  });
 }
 function applySkin(){
   var layer = document.getElementById('skinLayer');
@@ -2334,6 +2485,11 @@ function openPasteImport(){
   };
   overlay.querySelector('[data-e="import"]').onclick = function(){
     if(!list.length){ toast('先点识别'); return; }
+    var need = 0;
+    for(var q = 0; q < list.length; q++){
+      if(list[q].s2 + 1 > need) need = list[q].s2 + 1;
+    }
+    if(need > slots().length) extendSlots(need);
     var cs = courses(), done = 0, skip = 0;
     for(var i = 0; i < list.length; i++){
       var o = list[i];
