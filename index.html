@@ -226,9 +226,9 @@
   .gridbox::-webkit-scrollbar{ height: 0; }
   .grid{
     display: grid;
-    grid-template-columns: 46px repeat(7, minmax(84px, 1fr));
+    grid-template-columns: 46px repeat(5, minmax(0, 1fr));
     grid-auto-rows: minmax(84px, auto);
-    min-width: 690px;
+    min-width: 0;
   }
   .gh{
     position: sticky; top: 0; z-index: 3;
@@ -1155,7 +1155,7 @@
     .weekbar{ padding: 8px 14px 6px; }
     .calbar{ padding: 0 10px 8px; }
     .gridbox{ margin: 0 4px; border-radius: 16px; }
-    .grid{ grid-template-columns: 42px repeat(7, minmax(80px, 1fr)); min-width: 620px; }
+    .grid{ grid-template-columns: 40px repeat(5, minmax(0, 1fr)); min-width: 0; }
     .grid{ grid-auto-rows: minmax(80px, auto); }
     .tcell .no{ font-size: 12.5px; }
     .tcell .tm{ font-size: 9.5px; }
@@ -1169,6 +1169,26 @@
     .agenda-head{ font-size: 20px; }
     .fab{ right: 14px; }
     .sheet{ max-height: 90%; }
+  }
+
+  @media (min-width: 380px) and (max-width: 470px){
+    .gridbox{ margin: 0 3px; border-radius: 14px; padding: 3px 0 6px; }
+    .grid{ grid-template-columns: 36px repeat(5, minmax(0, 1fr)); }
+    .tcell .no{ font-size: 11.5px; }
+    .tcell .tm{ font-size: 8.5px; letter-spacing: -.3px; }
+    .gh{ padding: 7px 0 8px; }
+    .gh .wk{ font-size: 11px; }
+    .gh .dt{ font-size: 13px; }
+    .cbtn{ padding: 6px 4px 5px; border-radius: 8px; }
+    .cbtn .nm{ line-height: 1.28; }
+  }
+
+  @media (min-width: 420px) and (max-width: 470px){
+    .grid{ grid-template-columns: 40px repeat(5, minmax(0, 1fr)); }
+    .tcell .tm{ font-size: 9px; }
+    .gh .wk{ font-size: 11.5px; }
+    .gh .dt{ font-size: 14px; }
+    .cbtn{ padding: 7px 5px 6px; }
   }
 
 
@@ -1207,30 +1227,65 @@ var FONTS = {
   large:  { name:'大',   nm:'15.5px', rm:'12.5px', wk:'14px',   dt:'17px', no:'14.5px', tm:'11px' }
 };
 var KEY = 'timetable-v4';
+var BUILD = 'b20261103';
+var DAYS = 5;
 
 function defSlots(){
   return [
     { s:'08:00', e:'08:40' },
-    { s:'08:50', e:'09:30' },
+    { s:'08:45', e:'09:25' },
     { s:'09:45', e:'10:25' },
-    { s:'10:35', e:'11:15' },
-    { s:'11:25', e:'12:05' },
-    { s:'14:00', e:'14:40' },
-    { s:'14:50', e:'15:30' },
-    { s:'15:45', e:'16:25' }
+    { s:'10:30', e:'11:10' },
+    { s:'11:15', e:'11:55' },
+    { s:'13:00', e:'13:40' },
+    { s:'13:45', e:'14:25' },
+    { s:'14:45', e:'15:25' },
+    { s:'15:30', e:'16:10' },
+    { s:'16:15', e:'16:55' },
+    { s:'18:00', e:'18:40' },
+    { s:'18:45', e:'19:25' },
+    { s:'19:30', e:'20:10' }
   ];
+}
+
+function defCourses(){
+  var R = '军工路校区 ';
+  var out = {};
+  function add(d, s, e, n, r, t, c, w){
+    for(var i = s; i <= e; i++){
+      out[d + '-' + i] = { n:n, r:R + r, t:t, c:c, w:w, cr:'', note:'' };
+    }
+  }
+  add(0, 2, 4, '材料计算与模拟', '一教433', '徐京城', '#ff6b6b', '3-18');
+  add(0, 5, 6, '纳米材料学', '一教417', '李慧珺', '#ff6b6b', '11-18');
+  add(0, 7, 9, '毛泽东思想和中国特色社会主义理论体系概论', '三教113', '赵文东', '#ff9500', '3-18');
+  add(0, 10, 12, '线性代数', '三教113', '黄文琳', '#af52de', '6-16');
+  add(1, 2, 4, '材料结构与性能(英)', '一教510', '邱汉迅', '#5ac8fa', '3-18');
+  add(1, 10, 11, '智能建造创新实践导论', '三教609', '刘琼,孙畅', '#34c759', '3-18');
+  add(2, 2, 4, '高分子科学基础(英)', '一教507', '邹华', '#ffcc00', '3-18');
+  add(2, 5, 6, '社会主义发展史', '卓越楼228', '李莹', '#af52de', '3-10');
+  add(2, 7, 8, '新能源材料', '一教507', '夏水鑫', '#5ac8fa', '3-18');
+  add(2, 10, 11, '工程学导论(1组)', '申江校区(军工路1100) 申阶梯教室1', '刘银华,张焱,朱志刚,杨艳,王嘉文,王苏然,薛裕华', '#af52de', '3-10');
+  add(3, 2, 4, '材料失效分析(英)', '一教312', '彭成信', '#ff2d55', '3-18');
+  add(3, 5, 6, '科学与工程伦理', '三教117', '张巍', '#00c7be', '3-10');
+  add(4, 1, 7, '材料物理综合实验', '一教503', '李磊', '#ff6b6b', '9-13');
+  add(4, 10, 11, '工程制图(2)', '三教106', '杨圣落', '#5ac8fa', '6-18');
+  return out;
 }
 
 function defState(){
   return {
+    build: BUILD,
     tab: 'course',
-    week: 8,
+    week: 9,
     maxWeek: 20,
     semStart: '2026-09-07',
     remind: false,
     simple: false,
+    font: 'normal',
     skin: 'none',
     skins: [],
+    foldDone: false,
     terms: [
       { id:'t1', name:'大二上' },
       { id:'t2', name:'大二下' },
@@ -1238,20 +1293,7 @@ function defState(){
     ],
     termId: 't3',
     data: {
-      t3: {
-        slots: defSlots(),
-        courses: {
-          '0-0': { n:'纳米材料学(英)', r:'军工路校区 一教433', t:'徐京城', c:'#ff6b6b', w:'3-18', cr:'2.0' },
-          '0-1': { n:'纳米材料学(英)', r:'军工路校区 一教433', t:'徐京城', c:'#ff6b6b', w:'3-18', cr:'2.0' },
-          '1-2': { n:'材料计算与模拟', r:'军工路校区 一教433', t:'徐京城', c:'#5ac8fa', w:'3-18', cr:'2.0' },
-          '1-3': { n:'材料计算与模拟', r:'军工路校区 一教433', t:'徐京城', c:'#5ac8fa', w:'3-18', cr:'2.0' },
-          '1-4': { n:'材料计算与模拟', r:'军工路校区 一教433', t:'徐京城', c:'#5ac8fa', w:'3-18', cr:'2.0' },
-          '2-2': { n:'材料结构', r:'三教609', t:'李工', c:'#34c759', w:'1-16', cr:'1.5' },
-          '3-0': { n:'高分子科学', r:'一教305', t:'王敏', c:'#ffcc00', w:'2-14', cr:'2.0' },
-          '3-1': { n:'高分子科学', r:'一教305', t:'王敏', c:'#ffcc00', w:'2-14', cr:'2.0' },
-          '4-3': { n:'材料失效分析', r:'二教102', t:'赵磊', c:'#af52de', w:'5-12', cr:'1.0' }
-        }
-      },
+      t3: { slots: defSlots(), courses: defCourses() },
       t1: { slots: defSlots(), courses: {} },
       t2: { slots: defSlots(), courses: {} }
     },
@@ -1271,6 +1313,7 @@ function load(){
     var o = JSON.parse(raw);
     var d = defState();
     if(!o || !o.data) return d;
+    if(o.build !== BUILD) return d;
     if(Array.isArray(o.terms) && o.terms.length) d.terms = o.terms;
     d.termId = o.termId || d.termId;
     if(!d.data[d.termId]) d.termId = Object.keys(d.data)[0] || 't3';
@@ -1356,7 +1399,13 @@ function dayDate(i){
   d.setDate(d.getDate() + (S.week - 1) * 7 + i);
   return d;
 }
-function todayIdx(){ return (new Date().getDay() + 6) % 7; }
+function todayIdx(){
+  var k = (new Date().getDay() + 6) % 7;
+  return k >= DAYS ? 0 : k;
+}
+function isTodayCol(i){
+  return i === (new Date().getDay() + 6) % 7 && i < DAYS;
+}
 function dateKey(d){
   return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 }
@@ -1420,7 +1469,7 @@ function weekBarHTML(){
 
 function calHTML(){
   var h = '<div class="calbar"><div class="cal-month">' + (dayDate(0).getMonth() + 1) + '月</div><div class="days" id="days">';
-  for(var i = 0; i < 7; i++){
+  for(var i = 0; i < DAYS; i++){
     var d = dayDate(i);
     var cls = 'day';
     if(dateKey(d) === dateKey(new Date())) cls += ' today';
@@ -1705,7 +1754,7 @@ function renderGrid(){
   var today = dateKey(new Date());
   var n = sl.length;
   var h = '<div class="gh corner"><span class="mo">' + (dayDate(0).getMonth() + 1) + '月</span></div>';
-  for(var i = 0; i < 7; i++){
+  for(var i = 0; i < DAYS; i++){
     var d = dayDate(i);
     var cls = 'gh' + (dateKey(d) === today ? ' today' : '');
     h += '<div class="' + cls + '"><span class="wk">' + WEEK1[i] + '</span><span class="dt">' + d.getDate() + '</span></div>';
@@ -1715,10 +1764,10 @@ function renderGrid(){
   for(var s = 0; s < n; s++){
     h += '<div class="tcell" style="grid-row:' + (s + 2) + '"><button data-tm="' + s + '"><div class="no">' + (s + 1) + '</div>' +
          '<div class="tm">' + esc(sl[s].s) + '<br>' + esc(sl[s].e) + '</div></button></div>';
-    for(var i2 = 0; i2 < 7; i2++){
+    for(var i2 = 0; i2 < DAYS; i2++){
       if(covered[ckey(i2, s)]) continue;
       var c = cs[ckey(i2, s)];
-      var tcol = dateKey(dayDate(i2)) === today ? ' tcol' : '';
+      var tcol = isTodayCol(i2) ? ' tcol' : '';
       var rowStyle = 'grid-row:' + (s + 2) + ';grid-column:' + (i2 + 2) + ';';
       if(c && inWeek(c.w, S.week)){
         var run = spanRun(i2, s);
@@ -1962,7 +2011,7 @@ function openCourseForm(d, s, c){
     curE = spanEnd(d, s);
   }
   var daySel = '';
-  for(var i = 0; i < 7; i++){
+  for(var i = 0; i < DAYS; i++){
     daySel += '<option value="' + i + '"' + (i === curDay ? ' selected' : '') + '>' + WEEKF[i] + '</option>';
   }
   var slotA = '', slotB = '';
