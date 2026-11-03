@@ -588,6 +588,27 @@
   }
   .two{ display: flex; gap: 10px; }
   .two .field{ flex: 1; }
+  .rngs{ display: flex; gap: 8px; }
+  .rngs select{ flex: 1; width: auto; }
+  .rngs .dash{ flex: none; align-self: center; color: var(--muted); font-size: 13px; }
+  .fd-ok{ color: #2a9d4a; }
+  .fd-bad{ color: #e5484d; }
+  .paste-area{ min-height: 104px; resize: vertical; line-height: 1.55; font-size: 12.5px; }
+  .pv-tip{ font-size: 11.5px; color: var(--muted); margin: 2px 0 10px; line-height: 1.5; }
+  .pv-item{
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 0; border-top: 1px solid var(--line2);
+  }
+  .pv-item .pv-dot{ flex: none; width: 10px; height: 10px; border-radius: 50%; }
+  .pv-item .pv-tx{ flex: 1; min-width: 0; font-size: 12.5px; color: var(--text); }
+  .pv-item .pv-tx em{ display: block; font-style: normal; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .pv-item .pv-rm{ flex: none; width: 22px; height: 22px; border-radius: 11px; background: var(--bg); color: var(--wine); font-size: 12px; line-height: 1; }
+  .pv-empty{ font-size: 12px; color: var(--muted); padding: 8px 0; }
+  .btn-more{
+    width: 100%; margin: 4px 0 12px; padding: 10px;
+    border: 1px dashed var(--line); border-radius: 10px;
+    color: var(--wine); font-size: 12.5px;
+  }
   .swatches{ display: flex; gap: 8px; flex-wrap: wrap; }
   .swatch{
     width: 28px; height: 28px; border-radius: 50%;
@@ -1416,6 +1437,145 @@ function spanRun(di, s0){
   }
   return n;
 }
+function spanStart(di, s0){
+  var cs = courses(), c = cs[ckey(di, s0)];
+  if(!c) return s0;
+  var k = spanKey(c, s0), st = s0;
+  while(st > 0){
+    var p = cs[ckey(di, st - 1)];
+    if(!p || spanKey(p, st - 1) !== k) break;
+    st--;
+  }
+  return st;
+}
+function spanEnd(di, s0){
+  var cs = courses(), c = cs[ckey(di, s0)];
+  if(!c) return s0;
+  var k = spanKey(c, s0), total = slots().length, en = s0;
+  while(en < total - 1){
+    var nx = cs[ckey(di, en + 1)];
+    if(!nx || spanKey(nx, en + 1) !== k) break;
+    en++;
+  }
+  return en;
+}
+function clearSpan(di, s0){
+  var cs = courses(), c = cs[ckey(di, s0)];
+  if(!c) return;
+  var k = spanKey(c, s0);
+  var st = spanStart(di, s0), en = spanEnd(di, s0);
+  for(var i = st; i <= en; i++){
+    var x = cs[ckey(di, i)];
+    if(x && spanKey(x, i) === k) delete cs[ckey(di, i)];
+  }
+}
+
+/* ---------- 粘贴识别 ---------- */
+function cnWeek(txt){
+  var map = { '一':1, '二':2, '三':3, '四':4, '五':5, '六':6, '日':7, '天':7, '七':7 };
+  return map[txt] || 0;
+}
+function parseOneCourse(raw){
+  var t = String(raw || '');
+  if(!t.replace(/\s/g, '')) return null;
+  var r = { day:-1, s1:-1, s2:-1, n:'', r:'', t:'', w:'', cr:'', note:'' };
+  var work = t.replace(/／/g, '/').replace(/－/g, '-').replace(/[—–~～至到]/g, '-');
+
+  var md = /(?:周|星期|礼拜)\s*([一二三四五六日天七])/.exec(work);
+  if(md) r.day = cnWeek(md[1]) - 1;
+
+  var mw = /(\d{1,2})\s*-\s*(\d{1,2})\s*周/.exec(work);
+  if(mw) r.w = mw[1] + '-' + mw[2];
+  else {
+    var mw1 = /(\d{1,2})\s*周/.exec(work);
+    if(mw1) r.w = mw1[1];
+  }
+
+  var slotSrc = work;
+  if(mw) slotSrc = slotSrc.replace(mw[0], ' ');
+  var ms = /(\d{1,2})\s*-\s*(\d{1,2})\s*节/.exec(slotSrc) || /第\s*(\d{1,2})\s*-\s*(\d{1,2})\s*节/.exec(slotSrc);
+  var total = slots().length;
+  if(ms){
+    var a = parseInt(ms[1], 10), b = parseInt(ms[2], 10);
+    if(a >= 1 && b >= a && b <= total){ r.s1 = a - 1; r.s2 = b - 1; }
+  }
+  if(r.s1 < 0){
+    var m1 = /第\s*(\d{1,2})\s*节/.exec(slotSrc);
+    if(m1){
+      var a1 = parseInt(m1[1], 10);
+      if(a1 >= 1 && a1 <= total){ r.s1 = a1 - 1; r.s2 = a1 - 1; }
+    }
+  }
+  if(r.s1 < 0){
+    var mt = /(\d{1,2})\s*节/.exec(slotSrc);
+    if(mt){
+      var a2 = parseInt(mt[1], 10);
+      if(a2 >= 1 && a2 <= total){ r.s1 = a2 - 1; r.s2 = a2 - 1; }
+    }
+  }
+
+  if(/单周/.test(work)) r.oddOnly = true;
+  if(/双周/.test(work)) r.evenOnly = true;
+
+  var lines = t.split(/[\n\r]+/);
+  var rest = [];
+  for(var i = 0; i < lines.length; i++){
+    var ln = lines[i].replace(/\s+/g, ' ').trim();
+    if(!ln) continue;
+    if(!r.r && /(教|楼|室|馆|校区|实验|中心|场)/.test(ln) && !/(?:周|星期|礼拜)/.test(ln) && ln.length <= 30){
+      r.r = ln; continue;
+    }
+    if(!r.t && /(老师|教授|讲师|助教)$/.test(ln) && ln.length <= 12){
+      r.t = ln; continue;
+    }
+    if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(ln) && /节/.test(ln)) continue;
+    if(/^\d{1,2}\s*-\s*\d{1,2}\s*周$/.test(ln)) continue;
+    if(/^(学分|课时)[:：]?\s*[\d.]+$/.test(ln)){ r.cr = (/([\d.]+)/.exec(ln) || [])[1] || ''; continue; }
+    rest.push(ln);
+  }
+  if(!r.n){
+    var best = '';
+    for(var j = 0; j < rest.length; j++){
+      if(rest[j].length > best.length) best = rest[j];
+    }
+    r.n = best;
+  }
+  if(!r.n) return null;
+  return r;
+}
+function parseCourseText(text){
+  var t = String(text || '');
+  if(!t.trim()) return [];
+  var blocks = t.split(/\n\s*\n/);
+  var out = [];
+  for(var i = 0; i < blocks.length; i++){
+    var seg = blocks[i].trim();
+    if(!seg) continue;
+    var lines = seg.split(/[\n\r]+/);
+    var dayLine = 0;
+    for(var j = 0; j < lines.length; j++){
+      if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(lines[j])) dayLine++;
+    }
+    if(dayLine > 1){
+      var buf = [], cur = [];
+      for(var k = 0; k < lines.length; k++){
+        cur.push(lines[k]);
+        if(/(?:周|星期|礼拜)\s*[一二三四五六日天七]/.test(lines[k]) && /节/.test(lines[k])){
+          buf.push(cur.join('\n')); cur = [];
+        }
+      }
+      if(cur.length) buf.push(cur.join('\n'));
+      for(var m = 0; m < buf.length; m++){
+        var one = parseOneCourse(buf[m]);
+        if(one) out.push(one);
+      }
+    } else {
+      var one2 = parseOneCourse(seg);
+      if(one2) out.push(one2);
+    }
+  }
+  return out;
+}
 function renderGrid(){
   var g = document.getElementById('grid');
   if(!g) return;
@@ -1670,11 +1830,49 @@ function openCellMenu(d, s){
 function openCourseForm(d, s, c){
   var isNew = !c;
   var bg = c ? colorOf(c.c, c.n) : COLORS[0];
+  var total = slots().length;
+  var curDay = d, curS = s, curE = s;
+  if(d == null || s == null){
+    curDay = todayIdx();
+    curS = 0; curE = 0;
+  } else {
+    curS = spanStart(d, s);
+    curE = spanEnd(d, s);
+  }
+  var daySel = '';
+  for(var i = 0; i < 7; i++){
+    daySel += '<option value="' + i + '"' + (i === curDay ? ' selected' : '') + '>' + WEEKF[i] + '</option>';
+  }
+  var slotA = '', slotB = '';
+  for(var j = 0; j < total; j++){
+    slotA += '<option value="' + j + '"' + (j === curS ? ' selected' : '') + '>第' + (j + 1) + '节</option>';
+    slotB += '<option value="' + j + '"' + (j === curE ? ' selected' : '') + '>第' + (j + 1) + '节</option>';
+  }
+  var tm = '';
+  if(total){
+    var a0 = slots()[curS] || slots()[0];
+    var b0 = slots()[curE] || slots()[total - 1];
+    tm = esc(a0.s) + '-' + esc(b0.e);
+  }
+
   var h = '<div class="sheet-body">' +
     '<div class="dlg-t">' + (isNew ? '添加课程' : '编辑课程') + '</div>' +
+    '<div class="field"><span>粘贴识别（可选）</span>' +
+      '<textarea class="paste-area" id="fPaste" placeholder="把课程信息整段粘进来，点下面的识别，自动填好下面的字段&#10;例：高等数学&#10;周一 1-2节&#10;1-16周&#10;一教305&#10;张老师"></textarea>' +
+    '</div>' +
+    '<button class="btn-more" data-e="parse">识别粘贴内容</button>' +
     '<label class="field"><span>课程名称</span><input id="fName" value="' + esc(c ? c.n : '') + '" placeholder="如：高等数学"></label>' +
     '<label class="field"><span>上课地点</span><input id="fRoom" value="' + esc(c ? c.r : '') + '" placeholder="如：一教305"></label>' +
     '<label class="field"><span>授课教师</span><input id="fTeacher" value="' + esc(c ? c.t : '') + '" placeholder="如：张老师"></label>' +
+    '<label class="field"><span>星期与节次</span>' +
+      '<div class="rngs">' +
+        '<select id="fDay">' + daySel + '</select>' +
+        '<select id="fSlotA">' + slotA + '</select>' +
+        '<span class="dash">–</span>' +
+        '<select id="fSlotB">' + slotB + '</select>' +
+      '</div>' +
+      '<div class="pv-tip" id="fTimeTip">' + tm + '</div>' +
+    '</label>' +
     '<div class="two">' +
       '<label class="field"><span>周次范围</span><input id="fWeek" value="' + esc(c ? c.w : '1-' + S.maxWeek) + '" placeholder="如：3-18"></label>' +
       '<label class="field"><span>学分</span><input id="fCred" value="' + esc(c ? c.cr : '') + '" placeholder="如：2.0"></label>' +
@@ -1682,21 +1880,25 @@ function openCourseForm(d, s, c){
     '<label class="field"><span>备注</span><input id="fNote" value="' + esc(c ? (c.note || '') : '') + '" placeholder="选填"></label>' +
     '<div class="field"><span>颜色</span><div class="swatches" id="fSw">' +
       COLORS.map(function(x){ return '<button class="swatch' + (x === bg ? ' on' : '') + '" data-col="' + x + '" style="background-color:' + x + '"></button>'; }).join('') +
-    '</div></div>';
-  if(!(d != null && s != null)){
-    h += '<div class="two">' +
-      '<label class="field"><span>星期</span><select id="fDay">' + WEEKF.map(function(w, i){ return '<option value="' + i + '">' + w + '</option>'; }).join('') + '</select></label>' +
-      '<label class="field"><span>节次</span><select id="fSlot">' + slots().map(function(x, i){ return '<option value="' + i + '">第' + (i + 1) + '节 ' + x.s + '</option>'; }).join('') + '</select></label>' +
-    '</div>';
-  } else {
-    h += '<div class="dlg-d" style="margin:0 0 12px">' + WEEKF[d] + ' 第' + (s + 1) + '节 ' + esc((slots()[s]||{}).s || '') + '-' + esc((slots()[s]||{}).e || '') + '</div>';
-  }
-  h += '</div><div class="sheet-foot">' +
+    '</div></div>' +
+    '</div><div class="sheet-foot">' +
     '<button class="foot-btn" data-e="cancel">取消</button>' +
     '<button class="foot-btn primary" data-e="ok" style="flex:2">保存</button>' +
   '</div>';
   var col = bg;
   openSheet(h, function(root){
+    var selA = root.querySelector('#fSlotA');
+    var selB = root.querySelector('#fSlotB');
+    var tip = root.querySelector('#fTimeTip');
+    function syncTip(){
+      var a = parseInt(selA.value, 10), b = parseInt(selB.value, 10);
+      if(b < a){ b = a; selB.value = String(a); }
+      var sa = slots()[a] || {}, sb = slots()[b] || {};
+      var cnt = b - a + 1;
+      tip.textContent = (sa.s || '') + '-' + (sb.e || '') + (cnt > 1 ? '，共 ' + cnt + ' 节连排' : '');
+    }
+    selA.onchange = syncTip;
+    selB.onchange = syncTip;
     Array.prototype.forEach.call(root.querySelectorAll('.swatch'), function(b){
       b.onclick = function(){
         col = b.getAttribute('data-col');
@@ -1704,16 +1906,40 @@ function openCourseForm(d, s, c){
         b.className = 'swatch on';
       };
     });
+    root.querySelector('[data-e="parse"]').onclick = function(){
+      var txt = root.querySelector('#fPaste').value;
+      if(!txt.trim()){ toast('先粘贴课程信息'); return; }
+      var one = parseOneCourse(txt);
+      if(!one || !one.n){ toast('没识别出课程名，请检查格式'); return; }
+      root.querySelector('#fName').value = one.n;
+      if(one.r) root.querySelector('#fRoom').value = one.r;
+      if(one.t) root.querySelector('#fTeacher').value = one.t;
+      if(one.w) root.querySelector('#fWeek').value = one.w;
+      if(one.cr) root.querySelector('#fCred').value = one.cr;
+      if(one.oddOnly) root.querySelector('#fNote').value = '单周';
+      if(one.evenOnly) root.querySelector('#fNote').value = '双周';
+      if(one.day >= 0) root.querySelector('#fDay').value = String(one.day);
+      if(one.s1 >= 0){
+        selA.value = String(one.s1);
+        selB.value = String(one.s2 >= one.s1 ? one.s2 : one.s1);
+      }
+      col = colorOf(null, one.n);
+      Array.prototype.forEach.call(root.querySelectorAll('.swatch'), function(x){
+        x.className = 'swatch' + (x.getAttribute('data-col') === col ? ' on' : '');
+      });
+      syncTip();
+      toast('已识别并填入，核对后保存');
+    };
     root.querySelector('[data-e="cancel"]').onclick = closeModal;
     root.querySelector('[data-e="ok"]').onclick = function(){
       var n = root.querySelector('#fName').value.trim();
       if(!n){ toast('请填写课程名称'); return; }
-      var dd = d, ss = s;
-      if(dd == null || ss == null){
-        dd = parseInt(root.querySelector('#fDay').value, 10);
-        ss = parseInt(root.querySelector('#fSlot').value, 10);
-      }
-      courses()[ckey(dd, ss)] = {
+      var dd = parseInt(root.querySelector('#fDay').value, 10);
+      var s1 = parseInt(selA.value, 10);
+      var s2 = parseInt(selB.value, 10);
+      if(s2 < s1) s2 = s1;
+      if(!isNew) clearSpan(d, s);
+      var body = {
         n: n,
         r: root.querySelector('#fRoom').value.trim(),
         t: root.querySelector('#fTeacher').value.trim(),
@@ -1722,6 +1948,7 @@ function openCourseForm(d, s, c){
         cr: root.querySelector('#fCred').value.trim(),
         note: root.querySelector('#fNote').value.trim()
       };
+      for(var k = s1; k <= s2; k++) courses()[ckey(dd, k)] = body;
       closeModal(); render(); toast(isNew ? '已添加' : '已保存');
     };
   });
@@ -1800,6 +2027,7 @@ function openSettings(){
   h += '<div class="set-group">' +
     setItem('▦', '课表数据', '', 'slots') +
     setItem('≡', '已添课程', '', 'list') +
+    setItem('⇩', '粘贴导入课程', '', 'paste') +
   '</div>';
   h += '<div class="set-group">' +
     setItem('◧', '课表皮肤', skinName(), 'skin') +
@@ -1831,6 +2059,7 @@ function openSettings(){
       var k = b.getAttribute('data-k');
       if(k === 'slots') openSlots();
       else if(k === 'list') openCourseList();
+      else if(k === 'paste') openPasteImport();
       else if(k === 'theme'){
         var cur = document.documentElement.getAttribute('data-theme') === 'dark';
         document.documentElement.setAttribute('data-theme', cur ? 'light' : 'dark');
@@ -2040,6 +2269,89 @@ function openSlots(){
     };
   });
 }
+function openPasteImport(){
+  var h = '<div class="nav"><button class="circle-btn" data-e="back">‹</button><div class="center">粘贴导入</div><div style="width:32px"></div></div>';
+  h += '<div class="scroll" style="padding:16px;flex:1">';
+  h += '<div class="field"><span>把课程信息粘贴到这里</span>' +
+    '<textarea class="paste-area" id="pText" placeholder="支持多门课，每门之间空一行：&#10;&#10;高等数学&#10;周一 1-2节&#10;1-16周&#10;一教305&#10;张老师&#10;&#10;大学物理&#10;周三 3-5节&#10;2-18周&#10;二教201"></textarea></div>';
+  h += '<div class="pv-tip">先点「识别」看预览，确认没问题再点「导入」。缺星期或节次的条目会标红并跳过。</div>';
+  h += '<button class="btn-more" data-e="scan">识别</button>';
+  h += '<div id="pPreview"></div>';
+  h += '</div>';
+  h += '<div class="sheet-foot" style="border-top:1px solid var(--line2)">' +
+    '<button class="foot-btn" data-e="cancel">取消</button>' +
+    '<button class="foot-btn primary" data-e="import" style="flex:2">导入</button></div>';
+
+  var r = document.getElementById('modalRoot');
+  r.innerHTML = '';
+  var overlay = document.createElement('div');
+  overlay.className = 'mask';
+  overlay.style.display = 'block';
+  overlay.innerHTML = '<div style="background:var(--bg);width:100%;height:100%;max-width:820px;margin:0 auto;display:flex;flex-direction:column">' + h + '</div>';
+  r.appendChild(overlay);
+
+  var list = [];
+  var prev = overlay.querySelector('#pPreview');
+
+  function drawPrev(){
+    if(!list.length){ prev.innerHTML = '<div class="pv-empty">还没有识别结果</div>'; return; }
+    var html = '';
+    for(var i = 0; i < list.length; i++){
+      var o = list[i];
+      var ok = o.day >= 0 && o.s1 >= 0;
+      var meta = [];
+      if(o.day >= 0) meta.push(WEEKF[o.day]);
+      else meta.push('缺星期');
+      if(o.s1 >= 0) meta.push('第' + (o.s1 + 1) + '-' + (o.s2 + 1) + '节');
+      else meta.push('缺节次');
+      if(o.w) meta.push(o.w + '周');
+      if(o.r) meta.push(o.r);
+      if(o.t) meta.push(o.t);
+      html += '<div class="pv-item">' +
+        '<span class="pv-dot" style="background-color:' + colorOf(null, o.n) + '"></span>' +
+        '<span class="pv-tx">' + esc(o.n) + '<em class="' + (ok ? 'fd-ok' : 'fd-bad') + '">' + esc(meta.join(' · ')) + '</em></span>' +
+        '<button class="pv-rm" data-rm="' + i + '">×</button></div>';
+    }
+    prev.innerHTML = html;
+    Array.prototype.forEach.call(prev.querySelectorAll('[data-rm]'), function(b){
+      b.onclick = function(){
+        list.splice(parseInt(b.getAttribute('data-rm'), 10), 1);
+        drawPrev();
+      };
+    });
+  }
+  drawPrev();
+
+  overlay.querySelector('[data-e="back"]').onclick = function(){ openSettings(); };
+  overlay.querySelector('[data-e="cancel"]').onclick = function(){ openSettings(); };
+  overlay.onclick = function(e){ if(e.target === overlay) closeModal(); };
+  overlay.querySelector('[data-e="scan"]').onclick = function(){
+    var txt = overlay.querySelector('#pText').value;
+    if(!txt.trim()){ toast('先粘贴内容'); return; }
+    list = parseCourseText(txt);
+    drawPrev();
+    toast(list.length ? '识别到 ' + list.length + ' 门课' : '没识别出课程，检查一下格式');
+  };
+  overlay.querySelector('[data-e="import"]').onclick = function(){
+    if(!list.length){ toast('先点识别'); return; }
+    var cs = courses(), done = 0, skip = 0;
+    for(var i = 0; i < list.length; i++){
+      var o = list[i];
+      if(o.day < 0 || o.s1 < 0){ skip++; continue; }
+      var body = {
+        n: o.n, r: o.r || '', t: o.t || '', c: colorOf(null, o.n),
+        w: o.w || ('1-' + S.maxWeek), cr: o.cr || '',
+        note: o.oddOnly ? '单周' : (o.evenOnly ? '双周' : '')
+      };
+      for(var k = o.s1; k <= o.s2; k++) cs[ckey(o.day, k)] = body;
+      done++;
+    }
+    save(); render();
+    openSettings();
+    toast('已导入 ' + done + ' 门' + (skip ? '，跳过 ' + skip + ' 门' : ''));
+  };
+}
+
 function openCourseList(){
   var cs = courses(), keys = Object.keys(cs);
   var h = '<div class="sheet-body"><div class="dlg-t">已添课程（' + keys.length + '）</div>';
